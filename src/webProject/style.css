@@ -1,0 +1,93 @@
+:root {
+    --background-color: #222;
+    --accent-color: #333;
+    --text-color: #e6e6e6;
+}
+
+body {
+    background: var(--background-color);
+    color: var(--text-color);
+
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+}
+
+header {
+    position: fixed;
+    background-color: var(--accent-color);
+    padding: 10px;
+    height: 50px;
+    width: 100%;
+}
+
+header h1, header p {
+    display: inline-block;
+    font-size: 2.2em;
+    margin: 4px 0 0 0;
+    padding: 0;
+    vertical-align: middle;
+}
+
+header p {
+    float: right;
+    margin-right: 30px;
+}
+
+.main-content {
+    background-color: var(--accent-color);
+
+    position: relative;
+    bottom: 0;
+    left: 0;
+    margin: 0 auto;
+    margin-top: 4.5%;
+    padding: 0;
+    
+    width: 85%;
+    max-height: 100%;
+    border-radius: 12px 12px 0 0;
+
+    z-index: -1;
+}
+
+.main-content div:first-child {
+    padding: 10px 20px 20px 20px;
+
+    max-height: 90%;
+    width: 100%;
+}
+
+button {
+    color: var(--text-color);
+}
+
+h1 {
+    margin-left: 15px;
+}
+
+table {
+    border-collapse: collapse;
+    margin: auto;
+    width: 80%;
+}
+
+td, th {
+    border: 1px solid #000000;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #1a1a1a;
+}
+
+.floorplan {
+    text-align: center;
+}
+
+.floorplan img {
+    margin: 0;
+    margin-top: 160px;
+    padding: 0;
+    height: 600px;
+}
