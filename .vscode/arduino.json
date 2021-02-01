@@ -1,0 +1,5 @@
+{
+    "board": "arduino:samd:mkrfox1200",
+    "port": "COM7",
+    "sketch": "src\\arduino\\send_value.ino"
+}

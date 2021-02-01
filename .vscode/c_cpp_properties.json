@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:\\Users\\amsttho\\Documents\\Arduino\\libraries\\Arduino_Low_Power\\src",
+                "C:\\Users\\amsttho\\Documents\\Arduino\\libraries\\Arduino_SigFox_for_MKRFox1200\\src",
+                "C:\\Users\\amsttho\\Documents\\Arduino\\libraries\\DHT-sensor-library-1.4.1",
+                "C:\\Users\\amsttho\\Documents\\Arduino\\libraries\\Adafruit_Unified_Sensor",
+                "C:\\Users\\amsttho\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
+                "C:\\Users\\amsttho\\Documents\\Arduino\\libraries\\**",
+                "C:\\Program Files (x86)\\Arduino\\libraries\\**",
+                "C:\\Users\\amsttho\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\samd\\1.8.11\\**",
+                "C:\\Users\\amsttho\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\samd\\1.6.16\\**"
+            ],
+            "forcedInclude": [
+                "C:\\Users\\amsttho\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\samd\\1.6.16\\cores\\arduino\\Arduino.h"
+            ],
+            "defines": [
+                "USBCON"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
