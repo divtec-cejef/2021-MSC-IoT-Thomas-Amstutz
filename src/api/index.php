@@ -3,7 +3,7 @@
 require_once 'router.php';
 require_once "./inc/util.inc.php";
 
-// récupère l'url partielle vers le dossier en cours
+// Get the URL to the working directory
 $sub_dir = dirname($_SERVER['PHP_SELF']);
 
 /**** VALUES  ****/
@@ -23,9 +23,10 @@ route('get', $sub_dir . '/values/([0-9]+)', function ($matches, $rxd) {
     if (empty($data)) {
         http_response_code(404);
         $data = "{}";
-    } else
-    http_response_code(200);
-    
+    } else {
+        http_response_code(200);
+    }
+
     header('Content-Type: application/json');
     echo json_encode($data);
     exit();
@@ -42,8 +43,9 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
         if (empty($data)) {
             http_response_code(400);
             $data = "{}";
-        } else
+        } else {
             http_response_code(201);
+        }
     } else {
         $data = [
             "error" => "Invalid key"
@@ -52,12 +54,13 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
         http_response_code(400);
     }
     
-    // header('Content-Type: application/json');
+    header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
 
 /**** SENSORS  ****/
+
 route('get', $sub_dir . '/sensors', function ($matches, $rxd) {
     $data = getAllSensors();
     
@@ -74,9 +77,10 @@ route('get', $sub_dir . '/sensors/([0-9]+)', function ($matches, $rxd) {
     if (empty($data)) {
         http_response_code(404);
         $data = "{}";
-    } else
-    http_response_code(200);
-    
+    } else {
+        http_response_code(200);
+    }
+
     header('Content-Type: application/json');
     echo json_encode($data);
     exit();
@@ -93,8 +97,9 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
         if (empty($data)) {
             http_response_code(400);
             $data = "{}";
-        } else
+        } else {
             http_response_code(201);
+        }
     } else {
         $data = [
             "error" => "Invalid key"
@@ -108,41 +113,10 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
     exit();
 });
 
-route('put', $sub_dir . '/sensors/([0-9]+)', function ($matches, $rxd) {
-    $id = $matches[1][0];
-    
-    $data = [
-        "method" => 'put', // pour démo
-        "id"     => $id
-    ];
-    $data = array_merge($data, $rxd);
-    
-    http_response_code(200);
-    header('Content-Type: application/json');
-    echo json_encode($data);
-    exit();
-});
-
-route('delete', $sub_dir . '/sensors/([0-9]+)', function ($matches, $rxd) {
-    $id = $matches[1][0];
-    $data = [
-        "method" => 'delete', // pour démo
-        "id"     => $id
-    ];
-    
-    
-    http_response_code(202);
-    header('Content-Type: application/json');
-    echo json_encode($data);
-    exit();
-});
-
-
-
-// si l'url ne correspond à aucune route
+// If the URL isn't correct
 $data = [];
 $data = [
-    "error"     => "Route invalide"
+    "error"     => "Unknown route"
 ];
 
 http_response_code(400);
