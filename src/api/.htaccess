@@ -1,0 +1,12 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^(.*)$ ./index.php?path=$1 [NC,L,QSA]
+
+# redirige toutes les requêtes vers index.php
+RewriteRule ^(.*)$ ./index.php [NC,L,QSA]
+
+
+RewriteEngine on
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?example.com [NC]
+RewriteRule \.(json)$ - [NC,F,L]
