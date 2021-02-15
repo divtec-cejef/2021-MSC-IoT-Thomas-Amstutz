@@ -6,7 +6,7 @@
 
 #define DHTPIN 2
 
-#define DHTTYPE DHT11   // DHT 11
+#define DHTTYPE DHT11 // DHT 11
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -20,7 +20,7 @@ void setup() {
 
   // Enable debug led and disable automatic deep sleep
   // Comment this line when shipping your project :)
-  SigFox.debug();
+  // SigFox.debug();
 
   // // Get the ID, PAC and version of the board
   // String version = SigFox.SigVersion();
