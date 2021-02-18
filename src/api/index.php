@@ -16,6 +16,15 @@ route('get', $sub_dir . '/values', function ($matches, $rxd) {
     exit();
 });
 
+route('get', $sub_dir . '/values/latest', function ($matches, $rxd) {
+    $data = getLatestValue();
+    
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode($data);
+    exit();
+});
+
 route('get', $sub_dir . '/values/([0-9]+)', function ($matches, $rxd) {
     $id = $matches[1][0];
     $data = getValueById($id);
@@ -36,7 +45,7 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
     $json = file_get_contents('php://input');
     $postData = json_decode($json, true);
 
-    if (isValidKey($postData['key'])) {
+    if (isset($postData['key']) && isValidKey($postData['key'])) {
         $deviceID = checkDevice($postData['device']);
         $data = addValue((float)$postData['humidity'], (float)$postData['temperature'], convertEpoch($postData['date']), $postData['seqNumber'], $deviceID);
         
@@ -60,7 +69,6 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
 });
 
 /**** SENSORS  ****/
-
 route('get', $sub_dir . '/sensors', function ($matches, $rxd) {
     $data = getAllSensors();
     
@@ -90,7 +98,7 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
     $json = file_get_contents('php://input');
     $postData = json_decode($json, true);
     
-    if (isValidKey($postData['key'])) {
+    if (isset($postData['key']) && isValidKey($postData['key'])) {
         $locationID = checkLocation($postData['location']);
         $data = addSensor($postData['device'], $locationID);
         
@@ -104,7 +112,7 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
         $data = [
             "error" => "Invalid key"
         ];
-        
+
         http_response_code(400);
     }
     

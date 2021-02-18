@@ -1,386 +1,384 @@
 <?php
 
+  /**
+   * Check if a key is valid
+   * @param $key Key to check
+   * @return true if the key is valid of false if it's not
+   */
   function isValidKey($key) {
     $file = file_get_contents(API_KEYS);
     $json = json_decode($file);
     foreach ($json as $item) {
-        if ($item == $key) {
-            return true;
-        }
+      if ($item == $key)
+        return true;
     }
 
     return false;
   }
 
+  /**
+   * Convert an epoch time to a DateTime
+   * @param $time epoch time to convert
+   * @return the converted value
+   */
   function convertEpoch($time) {
-    $formatedTime = new DateTime("@$time");  // convert UNIX timestamp to PHP DateTime
+    $formatedTime = new DateTime("@$time");
+
     return $formatedTime->format('Y-m-d H:i:s');
   }
 
+  /**
+   * Connect to the database
+   * @return the connection to the database 
+   */
   function conn_db() {
     $dsn = 'mysql:host=nh489.myd.infomaniak.com;dbname=' . DB_NAME . ';charset=UTF8';
     try {
-        $dbh = new PDO($dsn, DB_USER, DB_PWD);
-        $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $dbh;
-    }
-    catch (PDOException $e) {
-        print "error ! :" . $e->getMessage() . "<br>";
-        die();
+      $dbh = new PDO($dsn, DB_USER, DB_PWD);
+      $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      return $dbh;
+    } catch(PDOException $e) {
+      print "error ! :" . $e->getMessage() . "<br>";
+      die();
     }
   }
 
+  /**
+   * Get all the sensors from the database
+   * @return an array of sensors
+   */
   function getAllSensors() {
-    // récupération de tous les enregistrements
     try {
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT dev_id, loc.loc_name
-                FROM tb_devices
-                INNER JOIN tb_locations loc ON fk_dev_loc = loc.pk_loc;";
+      $sql = "SELECT dev_id, loc.loc_name
+              FROM tb_devices
+              INNER JOIN tb_locations loc ON fk_dev_loc = loc.pk_loc;";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //exécution de la requête
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        $stmt->execute();
-
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
-    // retourne un tableau d'enregistrement ou le $stmt
     return $stmt->fetchAll();
   }
 
+  /**
+   * Get a specific sensor from the database
+   * @param $id The id of the sensor
+   * @return the wanted element
+   */
   function getSensorById($id) {
-    // récupération de tous les enregistrements
-    try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+    try {
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT dev_id, loc.loc_name
-                FROM tb_devices
-                INNER JOIN tb_locations loc ON fk_dev_loc = loc.pk_loc
-                WHERE pk_dev = :id";
+      $sql = "SELECT dev_id, loc.loc_name
+              FROM tb_devices
+              INNER JOIN tb_locations loc ON fk_dev_loc = loc.pk_loc
+              WHERE pk_dev = :id";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-        //exécution de la requête
-        $stmt->execute();
-
-        // définir le mode de présentation des données
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
-
-    // retourne un tableau d'enregistrement ou le $stmt
     return $stmt->fetch();
   }
 
+  /**
+   * Add a new location to the database
+   * @param $loc_name The name of the new location
+   * @return the primary key of this new location
+   */
   function addLocation($loc_name) {
-    // récupération de tous les enregistrements
-    try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+    try {
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "INSERT INTO tb_locations (loc_name)
-                VALUES (:loc_name);";
+      $sql = "INSERT INTO tb_locations (loc_name)
+              VALUES (:loc_name);";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':loc_name', $loc_name);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':loc_name', $loc_name);
-
-        //exécution de la requête
-        $stmt->execute();
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
     return $dbh->lastInsertId();
   }
 
+  /**
+   * Add a new sensor to the database
+   * @param $device_id  The name of the new sensor
+   * @param $fk_loc     The index of the location of this sensor
+   * @return the primary key of this new sensor
+   */
   function addSensor($device_id, $fk_loc) {
-    // récupération de tous les enregistrements
-    try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+    try {
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "INSERT INTO tb_devices (dev_id, fk_dev_loc)
-                VALUES (:dev_id, :fk_loc);";
+      $sql = "INSERT INTO tb_devices (dev_id, fk_dev_loc)
+              VALUES (:dev_id, :fk_loc);";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':dev_id', $device_id);
+      $stmt->bindParam(':fk_loc', $fk_loc, PDO::PARAM_INT);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':dev_id', $device_id);
-        $stmt->bindParam(':fk_loc', $fk_loc, PDO::PARAM_INT);
-
-        //exécution de la requête
-        $stmt->execute();
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
     return $dbh->lastInsertId();
   }
 
+  /**
+   * Check for a location
+   *  * if it exists get the index
+   *  * if it doesn't create a new location and get it's index
+   * @param $location The location we want to check
+   * @return the index of the location
+   */
   function checkLocation($location) {
     if (!doesLocationExists($location))
-        return addLocation($location);
+      return addLocation($location);
     else
-        return getLocationIdByName($location);
+      return getLocationIdByName($location);
   }
 
+  /**
+   * Check for a sensor
+   *  * if it exists get the index
+   *  * if it doesn't create a new sensor and get it's index
+   * @param $device The sensor we want to check
+   * @return the index of the sensor
+   */
   function checkDevice($device) {
     if (!doesDeviceExists($device)){
-        $loc = "B1-04";
-        $loc_id = checkLocation($loc);
+      $loc = "B1-04";
+      $loc_id = checkLocation($loc);
 
-        return addSensor($device, $loc_id);
+      return addSensor($device, $loc_id);
     } else
-        return getDeviceIdBySigfoxId($device);
+      return getDeviceIdBySigfoxId($device);
   }
 
+  /**
+   * Add a new measerument to the database
+   * @param $humidity     The received humidity
+   * @param $temperature  The received temperature
+   * @param $date         The DateTime of the measurement
+   * @param $seqNumber    The number of this sequence
+   * @param $dev_id       The device who took the measurement
+   * @return the index of the created mesurement
+   */
   function addValue($humidity, $temperature, $date, $seqNumber, $dev_id) {
-    // récupération de tous les enregistrements
-    try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+    try {
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "INSERT INTO tb_results (res_humidity, res_temperature, res_date, res_seq, fk_res_dev)
-                VALUES (:humidity, :temperature, :date, :seqNumber, :device);";
+      $sql = "INSERT INTO tb_results (res_humidity, res_temperature, res_date, res_seq, fk_res_dev)
+              VALUES (:humidity, :temperature, :date, :seqNumber, :device);";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':humidity', $humidity);
+      $stmt->bindParam(':temperature', $temperature);
+      $stmt->bindParam(':date', $date);
+      $stmt->bindParam(':seqNumber', $seqNumber, PDO::PARAM_INT);
+      $stmt->bindParam(':device', $dev_id, PDO::PARAM_INT);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':humidity', $humidity);
-        $stmt->bindParam(':temperature', $temperature);
-        $stmt->bindParam(':date', $date);
-        $stmt->bindParam(':seqNumber', $seqNumber, PDO::PARAM_INT);
-        $stmt->bindParam(':device', $dev_id, PDO::PARAM_INT);
-
-        //exécution de la requête
-        $stmt->execute();
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
     return $dbh->lastInsertId();
   }
 
+  /**
+   * Get all the measurement from the database
+   * @return an array of measurement
+   */
   function getAllValues() {
-    // récupération de tous les enregistrements
     try {
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT res_humidity, res_temperature, res_date, res_seq, dev.dev_id, loc.loc_name
-                FROM tb_results res 
-                INNER JOIN tb_devices dev ON res.fk_res_dev = dev.pk_dev 
-                INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc;";
+      $sql = "SELECT res_humidity, res_temperature, res_date, res_seq, dev.dev_id, loc.loc_name
+              FROM tb_results res 
+              INNER JOIN tb_devices dev ON res.fk_res_dev = dev.pk_dev 
+              INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
+              ORDER BY res_date DESC;";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //exécution de la requête
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        $stmt->execute();
-
+      $stmt->execute();
     } catch (PDOException $e) {
-        echo $e->getMessage();
-        die();
+      echo $e->getMessage();
+      die();
     }
 
-    // retourne un tableau d'enregistrement ou le $stmt
     return $stmt->fetchAll();
   }
 
-  function getValueById($id) {
-    // récupération de tous les enregistrements
-    try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+  function getLatestValue() {
+    try {
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT res_humidity, res_temperature, res_date, res_seq, dev.dev_id, loc.loc_name
-                FROM tb_results res 
-                INNER JOIN tb_devices dev ON res.fk_res_dev = dev.pk_dev 
-                INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
-                WHERE pk_res = :id";
+      $sql = "SELECT * FROM tb_results ORDER BY pk_res DESC LIMIT 1;";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-        //exécution de la requête
-        $stmt->execute();
-
-        // définir le mode de présentation des données
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
-    // retourne un tableau d'enregistrement ou le $stmt
     return $stmt->fetch();
   }
 
+  /**
+   * Get a specific measurement from the database
+   * @param $id The id of the measurment
+   * @return the wanted element
+   */
+  function getValueById($id) {
+    try {
+      $dbh = conn_db();
 
+      $sql = "SELECT res_humidity, res_temperature, res_date, res_seq, dev.dev_id, loc.loc_name
+              FROM tb_results res 
+              INNER JOIN tb_devices dev ON res.fk_res_dev = dev.pk_dev 
+              INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
+              WHERE pk_res = :id";
+
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
+
+    return $stmt->fetch();
+  }
+
+  /**
+   * Check if a location exists in the database
+   * @param $loc_name The name of the wanted location
+   * @return a boolean which indicates if the location exists
+   */
   function doesLocationExists($loc_name) {
-    // récupération de tous les enregistrements
-    try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+    try {
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT pk_loc
-                FROM tb_locations
-                WHERE loc_name = :name";
+      $sql = "SELECT pk_loc
+              FROM tb_locations
+              WHERE loc_name = :name";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':name', $loc_name);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':name', $loc_name);
-
-        //exécution de la requête
-        $stmt->execute();
-
-        // définir le mode de présentation des données
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
-    // retourne un tableau d'enregistrement ou le $stmt
     return $stmt->rowCount() > 0;
   }
 
+  /**
+   * Finds a location in the database from it's name
+   * @param $loc_name The name of the wanted location
+   * @return the id of the found location
+   */
   function getLocationIdByName($loc_name) {
-    // récupération de tous les enregistrements
     try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT pk_loc
-                FROM tb_locations
-                WHERE loc_name = :name";
+      $sql = "SELECT pk_loc
+              FROM tb_locations
+              WHERE loc_name = :name";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':name', $loc_name);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':name', $loc_name);
-
-        //exécution de la requête
-        $stmt->execute();
-
-        // définir le mode de présentation des données
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
-    // retourne un tableau d'enregistrement ou le $stmt
     return (int)$stmt->fetch()['pk_loc'];
   }
 
+  /**
+   * Check if a sensor exists in the database
+   * @param $dev_id The name of the wanted sensor
+   * @return a boolean which indicates if the sensor exists
+   */
   function doesDeviceExists($dev_id) {
-    // récupération de tous les enregistrements
     try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT pk_dev
-                FROM tb_devices
-                WHERE dev_id = :id";
+      $sql = "SELECT pk_dev
+              FROM tb_devices
+              WHERE dev_id = :id";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);        
+      $stmt->bindParam(':id', $dev_id);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':id', $dev_id);
-
-        //exécution de la requête
-        $stmt->execute();
-
-        // définir le mode de présentation des données
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
-    // retourne un tableau d'enregistrement ou le $stmt
     return $stmt->rowCount() > 0;
   }
 
+  /**
+   * Finds a sensor in the database from it's Sigfox id
+   * @param $dev_id The name of the wanted sensor
+   * @return the id of the found sensor
+   */
   function getDeviceIdBySigfoxId($dev_id) {
-    // récupération de tous les enregistrements
     try{
-        // insertion des données dans la base de données
-        $dbh = conn_db();
+      $dbh = conn_db();
 
-        // modèle de requête
-        $sql = "SELECT pk_dev
-                FROM tb_devices
-                WHERE dev_id = :id";
+      $sql = "SELECT pk_dev
+              FROM tb_devices
+              WHERE dev_id = :id";
 
-        //préparation de la requête sur le serveur
-        $stmt = $dbh->prepare($sql);
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':id', $dev_id);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        //association du marqueur à une variable (E/S)
-        $stmt->bindParam(':id', $dev_id);
-
-        //exécution de la requête
-        $stmt->execute();
-
-        // définir le mode de présentation des données
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $e){
-        echo $e->getMessage();
-        die();
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
     }
 
-    // retourne un tableau d'enregistrement ou le $stmt
     return (int)$stmt->fetch()['pk_dev'];
   }
