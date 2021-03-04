@@ -6,21 +6,23 @@ require_once "./inc/util.inc.php";
 // Get the URL to the working directory
 $sub_dir = dirname($_SERVER['PHP_SELF']);
 
+header("Access-Control-Allow-Origin: *");
+header('Content-Type: application/json');
+
 /**** VALUES  ****/
 route('get', $sub_dir . '/values', function ($matches, $rxd) {
     $data = getAllValues();
     
     http_response_code(200);
-    header('Content-Type: application/json');
+    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
 
-route('get', $sub_dir . '/values/latest', function ($matches, $rxd) {
-    $data = getLatestValue();
+route('get', $sub_dir . '/values/average', function ($matches, $rxd) {
+    $data = getAvgValues();
     
     http_response_code(200);
-    header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -36,7 +38,36 @@ route('get', $sub_dir . '/values/([0-9]+)', function ($matches, $rxd) {
         http_response_code(200);
     }
 
-    header('Content-Type: application/json');
+    echo json_encode($data);
+    exit();
+});
+
+route('get', $sub_dir . '/locations/([0-9]+)/values', function ($matches, $rxd) {
+    $id = $matches[1][0];
+    $data = getValuesByLocation($id);
+    
+    if (empty($data)) {
+        http_response_code(404);
+        $data = "{}";
+    } else {
+        http_response_code(200);
+    }
+
+    echo json_encode($data);
+    exit();
+});
+
+route('get', $sub_dir . '/locations/([A-Z-0-9]+)/values', function ($matches, $rxd) {
+    $loc_name = $matches[1][0];
+    $data = getLocationByName($loc_name);
+    
+    if (empty($data)) {
+        http_response_code(404);
+        $data = "{}";
+    } else {
+        http_response_code(200);
+    }
+
     echo json_encode($data);
     exit();
 });
@@ -63,7 +94,6 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
         http_response_code(400);
     }
     
-    header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -73,7 +103,7 @@ route('get', $sub_dir . '/sensors', function ($matches, $rxd) {
     $data = getAllSensors();
     
     http_response_code(200);
-    header('Content-Type: application/json');
+    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -89,7 +119,7 @@ route('get', $sub_dir . '/sensors/([0-9]+)', function ($matches, $rxd) {
         http_response_code(200);
     }
 
-    header('Content-Type: application/json');
+    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -116,7 +146,7 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
         http_response_code(400);
     }
     
-    header('Content-Type: application/json');
+    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -128,5 +158,5 @@ $data = [
 ];
 
 http_response_code(400);
-header('Content-Type: application/json');
+
 echo json_encode($data, JSON_FORCE_OBJECT);
