@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="style.css">
     <script src="main.js" defer></script>
+    <script src="map.js" defer></script>
 </head>
 <body>
 
@@ -17,7 +18,11 @@
     </header>
 
     <div class="floorplan" style="margin: 0; padding: 0;">
-        <img src="img/floorplan.png" alt="" usemap="plan">
+        <img src="img/floorplan.png" alt="" usemap="#plan">
+        <map name="plan">
+            <area alt="B1-03" class="classe" id="b103" href="#" coords="14,20,303,560" shape="rect">
+            <area alt="B1-04" class="classe" id="b104" href="#" coords="490,290,303,555" shape="rect">
+        </map>
     </div>
 
     <div class="main-content">

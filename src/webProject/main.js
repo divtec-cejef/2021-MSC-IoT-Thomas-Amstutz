@@ -1,6 +1,4 @@
 function fillTable(table) {
-    // let measurements = getAllMeasurements();
-    console.log(table);
     let out = "<tr> <th>Humidité</th> <th>Température</th> <th>Date</th> <th>Device</th> <th>Salle</th></tr>";
     table.forEach(element => {
         out += '<tr>';
@@ -35,7 +33,7 @@ function getLatestTemp() {
             document.getElementById("latestTemp").innerHTML = content['res_temperature'] + "°C, " + content['res_humidity'] + "%";
         }
     };
-    httpGetLast.open("GET", "https://amsttho.divtec.me/iot/api/values/latest", true);
+    httpGetLast.open("GET", "https://amsttho.divtec.me/iot/api/values/average", true);
     httpGetLast.send();
 }
 
@@ -45,5 +43,7 @@ function init() {
 }
 
 init();
-setInterval(getMeasures, 10000);
-setInterval(getLatestTemp, 10000);
+setInterval(getMeasures, 60000);
+setInterval(getLatestTemp, 60000);
+
+document.getElementById("roomName").innerHTML = "Affichage de toutes les salles";

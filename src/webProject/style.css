@@ -2,6 +2,7 @@
     --background-color: #222;
     --accent-color: #333;
     --text-color: #e6e6e6;
+    --text-color2: #dadada;
 }
 
 body {
@@ -18,6 +19,8 @@ header {
     padding: 10px;
     height: 50px;
     width: 100%;
+
+    z-index: 999;
 }
 
 header h1, header p {
@@ -46,8 +49,6 @@ header p {
     width: 85%;
     max-height: 100%;
     border-radius: 12px 12px 0 0;
-
-    z-index: -1;
 }
 
 .main-content div:first-child {
@@ -77,8 +78,18 @@ td, th {
     padding: 8px;
 }
 
-tr:nth-child(even) {
+tr:nth-child(even)  {
     background-color: #1a1a1a;
+}
+
+.main-content table tr:hover {
+    background-color: rgb(80, 80, 80);
+    color: var(--text-color2);
+}
+
+body .main-content tr:first-child:hover {
+    background-color: var(--accent-color);
+    color: var(--text-color);
 }
 
 .floorplan {
