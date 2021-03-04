@@ -10,12 +10,12 @@
  */
 function route ($method, $regex, $cb) {
 
-    if( strtoupper($method) !== $_SERVER['REQUEST_METHOD'])
+    if(strtoupper($method) !== $_SERVER['REQUEST_METHOD'])
         return 0;
 
     $recieved_datas = [];
 
-    switch ($_SERVER['REQUEST_METHOD']){
+    switch ($_SERVER['REQUEST_METHOD']) {
         case 'PUT':
             parse_str(file_get_contents("php://input"),$recieved_datas);
             break;
@@ -29,8 +29,7 @@ function route ($method, $regex, $cb) {
 
     $is_match = preg_match('/^' . ($regex) . '$/', $_SERVER['REQUEST_URI'], $matches, PREG_OFFSET_CAPTURE);
 
-    if ($is_match) {
+    if ($is_match)
         $cb($matches, $recieved_datas);
-    }
 }
 
