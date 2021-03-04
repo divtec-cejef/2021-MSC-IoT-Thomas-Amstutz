@@ -233,24 +233,6 @@
     return $stmt->fetchAll();
   }
 
-  function getLatestValue() {
-    try {
-      $dbh = conn_db();
-
-      $sql = "SELECT * FROM tb_results ORDER BY pk_res DESC LIMIT 1;";
-
-      $stmt = $dbh->prepare($sql);
-      $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-      $stmt->execute();
-    } catch(PDOException $e) {
-      echo $e->getMessage();
-      die();
-    }
-
-    return $stmt->fetch();
-  }
-
   /**
    * Get a specific measurement from the database
    * @param $id The id of the measurment
@@ -311,7 +293,7 @@
    * @return the id of the found location
    */
   function getLocationIdByName($loc_name) {
-    try{
+    try {
       $dbh = conn_db();
 
       $sql = "SELECT pk_loc
@@ -337,7 +319,7 @@
    * @return a boolean which indicates if the sensor exists
    */
   function doesDeviceExists($dev_id) {
-    try{
+    try {
       $dbh = conn_db();
 
       $sql = "SELECT pk_dev
@@ -363,7 +345,7 @@
    * @return the id of the found sensor
    */
   function getDeviceIdBySigfoxId($dev_id) {
-    try{
+    try {
       $dbh = conn_db();
 
       $sql = "SELECT pk_dev
@@ -381,4 +363,153 @@
     }
 
     return (int)$stmt->fetch()['pk_dev'];
+  }
+
+  function getLocationIdFromName($location) {
+    try {
+      $dbh = conn_db();
+
+      $sql = "SELECT pk_loc
+              FROM tb_locations
+              WHERE loc_name = :location";
+
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':location', $location);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
+
+    return (int)$stmt->fetch()['pk_loc'];
+  }
+
+  function getValuesByLocation($locationId) {
+    try {
+      $dbh = conn_db();
+
+      $sql = "SELECT res_humidity, res_temperature, res_date, res_seq, dev.dev_id, loc.loc_name
+              FROM tb_results res 
+              INNER JOIN tb_devices dev ON res.fk_res_dev = dev.pk_dev 
+              INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
+              WHERE loc.pk_loc = :id
+              ORDER BY res_date DESC;";
+
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':id', $locationId, PDO::PARAM_INT);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+      $stmt->execute();
+    } catch (PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
+
+    return $stmt->fetchAll();
+  }
+
+  function getLocationByName($location) {
+    $locationId = getLocationIdByName($location);
+    return getValuesByLocation($locationId);
+  }
+
+
+
+  function getAvgValues() {
+    $pkList = getAllLocationsId();
+
+    $allMaxDateRowPk = [];
+ 
+    foreach ($pkList as $pk) {
+        $allMaxDateRowPk = array_merge($allMaxDateRowPk, getMaxDateFromLocation($pk['pk_loc']));    
+    }
+ 
+    $allLastResults = [];
+    
+    foreach($allMaxDateRowPk as $pk){
+        // $allLastResults = array_merge($allLastResults, getValueById($pk['pk_res']));
+        $allLastResults += getValueById($pk['pk_res']);
+        // var_dump($allLastResults);
+    }
+ 
+    return $allLastResults;
+  }
+
+  // function getResultByPk($pk) {
+  //   try {
+  //     $dbh = conn_db();
+
+  //     $sql = "SELECT *
+  //             FROM tb_results";
+
+  //     $stmt = $dbh->prepare($sql);
+  //     $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+  //     $stmt->execute();
+  //   } catch(PDOException $e) {
+  //     echo $e->getMessage();
+  //     die();
+  //   }
+
+  //   return $stmt->fetchAll();
+  // }
+
+  function getMaxDateFromLocation($pk_loc) {
+    try {
+      $dbh = conn_db();
+
+      $sql = "SELECT * FROM tb_results
+              WHERE tb_results.res_date = (
+                  SELECT MAX(tb_results.res_date)
+                  FROM tb_results
+                  WHERE fk_res_dev = (
+                      SELECT dev.pk_dev
+                      FROM tb_devices dev
+                      INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
+                      WHERE loc.pk_loc = :fk
+                  )
+              ) AND tb_results.fk_res_dev = (
+                  SELECT fk_res_dev
+                  FROM tb_results
+                  WHERE fk_res_dev = (
+                      SELECT dev.pk_dev
+                      FROM tb_devices dev
+                      INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
+                      WHERE loc.pk_loc = :fk
+                  )
+                  LIMIT 1
+              )";
+
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':fk', $pk_loc, PDO::PARAM_INT);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+      $stmt->execute();
+    } catch (PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
+
+    return $stmt->fetchAll();
+  }
+
+  function getAllLocationsId() {
+    try {
+      $dbh = conn_db();
+
+      $sql = "SELECT pk_loc
+              FROM tb_locations";
+
+      $stmt = $dbh->prepare($sql);
+      $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
+
+    return $stmt->fetchAll();
   }
