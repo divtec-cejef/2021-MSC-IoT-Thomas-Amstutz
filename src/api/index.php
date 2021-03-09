@@ -6,7 +6,7 @@ require_once "./inc/util.inc.php";
 // Get the URL to the working directory
 $sub_dir = dirname($_SERVER['PHP_SELF']);
 
-header("Access-Control-Allow-Origin: *");
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
 /**** VALUES  ****/
@@ -14,7 +14,6 @@ route('get', $sub_dir . '/values', function ($matches, $rxd) {
     $data = getAllValues();
     
     http_response_code(200);
-    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -76,7 +75,9 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
     $json = file_get_contents('php://input');
     $postData = json_decode($json, true);
 
-    if (isset($postData['key']) && isValidKey($postData['key'])) {
+    $headers = apache_request_headers();
+
+    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key'])) {
         $deviceID = checkDevice($postData['device']);
         $data = addValue((float)$postData['humidity'], (float)$postData['temperature'], convertEpoch($postData['date']), $postData['seqNumber'], $deviceID);
         
@@ -103,7 +104,6 @@ route('get', $sub_dir . '/sensors', function ($matches, $rxd) {
     $data = getAllSensors();
     
     http_response_code(200);
-    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -119,7 +119,6 @@ route('get', $sub_dir . '/sensors/([0-9]+)', function ($matches, $rxd) {
         http_response_code(200);
     }
 
-    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
@@ -128,7 +127,9 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
     $json = file_get_contents('php://input');
     $postData = json_decode($json, true);
     
-    if (isset($postData['key']) && isValidKey($postData['key'])) {
+    $headers = apache_request_headers();
+
+    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key'])) {
         $locationID = checkLocation($postData['location']);
         $data = addSensor($postData['device'], $locationID);
         
@@ -146,7 +147,6 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
         http_response_code(400);
     }
     
-    // header('Content-Type: application/json');
     echo json_encode($data);
     exit();
 });
