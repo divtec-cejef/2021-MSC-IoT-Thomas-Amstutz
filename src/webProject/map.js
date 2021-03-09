@@ -11,14 +11,20 @@ window.onload = function() {
             return false;
         };
     }
-
 }
 
 function updateRoomName(roomName) {
+    if (roomName === "") {
+        roomName = "Affichage de toutes les salles";
+    }
     document.getElementById("roomName").innerHTML = roomName;
 }
 
 function getValuesByRoom(roomName) {
+    let urlRequest = "https://amsttho.divtec.me/iot/api/locations/" + roomName + "/values";
+    if (roomName === "")
+        urlRequest = "https://amsttho.divtec.me/iot/api/values";
+    
     let httpGetValues = new XMLHttpRequest();
     httpGetValues.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -29,6 +35,6 @@ function getValuesByRoom(roomName) {
             fillTable("");
         }
     };
-    httpGetValues.open("GET", "https://amsttho.divtec.me/iot/api/locations/" + roomName + "/values", true);
+    httpGetValues.open("GET", urlRequest, true);
     httpGetValues.send();
 }
