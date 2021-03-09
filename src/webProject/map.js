@@ -1,31 +1,21 @@
 // Wait for the page to load first
 window.onload = function() {
 
-    //Get a reference to the link on the page
-    // with an id of "mylink"
-    // let rooms = document.querySelectorAll(".classe");
-    var a = document.getElementById("b103");
-    var b = document.getElementById("b104");
-    
-    //Set code to run when the link is clicked
-    // by assigning a function to "onclick"
-    // for(let i = 0, len = rooms.length; i < len; i++) {
-    //     elements[i].onclick = function() {
-    //         updateRoomName(a.alt);
-    //         getValuesByRoom(a.alt);
-    //         return false;
-    //     }
-    // }
-    a.onclick = function() {
-      updateRoomName(a.alt);
-      getValuesByRoom(a.alt);
-      return false;
+    let anchors = document.getElementsByClassName('areaButton');
+
+    for (let i = 0; i < anchors.length; i++) {
+        let anchor = anchors[i];
+        anchor.onclick = function() {
+            updateRoomName(anchor.alt);
+            getValuesByRoom(anchor.alt);
+            return false;
+        };
     }
-    b.onclick = function() {
-      updateRoomName(b.alt);
-      getValuesByRoom(b.alt);
-      return false;
-    }
+
+    let testArea = document.getElementById("test");
+    testArea.onclick = function() {
+        alert("clické");
+    };
 }
 
 function updateRoomName(roomName) {
@@ -33,13 +23,16 @@ function updateRoomName(roomName) {
 }
 
 function getValuesByRoom(roomName) {
-    let httpGetLast = new XMLHttpRequest();
-    httpGetLast.onreadystatechange = function() {
+    let httpGetValues = new XMLHttpRequest();
+    httpGetValues.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             let content = JSON.parse(this.responseText);
             fillTable(content);
         }
+        if (this.status == 404) {
+            fillTable("");
+        }
     };
-    httpGetLast.open("GET", "https://amsttho.divtec.me/iot/api/locations/" + roomName + "/values", true);
-    httpGetLast.send();
+    httpGetValues.open("GET", "https://amsttho.divtec.me/iot/api/locations/" + roomName + "/values", true);
+    httpGetValues.send();
 }
