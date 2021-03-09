@@ -1,16 +1,20 @@
 function fillTable(table) {
-    let out = "<tr> <th>Humidité</th> <th>Température</th> <th>Date</th> <th>Device</th> <th>Salle</th></tr>";
-    table.forEach(element => {
-        out += '<tr>';
-        for (const key in element) {
-            if (Object.hasOwnProperty.call(element, key) && key != "res_seq") {
-                const value = element[key];
-                out += '<td>' + value + '</td>';
+    if (table) {
+        let out = "<tr> <th>Humidité</th> <th>Température</th> <th>Date</th> <th>Device</th> <th>Salle</th></tr>";
+        table.forEach(element => {
+            out += '<tr>';
+            for (const key in element) {
+                if (Object.hasOwnProperty.call(element, key) && key != "res_seq") {
+                    const value = element[key];
+                    out += '<td>' + value + '</td>';
+                }
             }
-        }
-        out += '</tr>';
-    });
-    document.getElementById("ValueTable").innerHTML = out;
+            out += '</tr>';
+        });
+        document.getElementById("ValueTable").innerHTML = out;
+    } else {
+        document.getElementById("ValueTable").innerHTML = "<p>Aucunes valeurs dans cette salle pour l'instant</p>";
+    }
 }
 
 function getMeasures() {
