@@ -423,38 +423,35 @@
     $allMaxDateRowPk = [];
  
     foreach ($pkList as $pk) {
-        $allMaxDateRowPk = array_merge($allMaxDateRowPk, getMaxDateFromLocation($pk['pk_loc']));    
+      $allMaxDateRowPk = array_merge($allMaxDateRowPk, getMaxDateFromLocation($pk['pk_loc']));
     }
  
     $allLastResults = [];
     
-    foreach($allMaxDateRowPk as $pk){
-        // $allLastResults = array_merge($allLastResults, getValueById($pk['pk_res']));
-        $allLastResults += getValueById($pk['pk_res']);
-        // var_dump($allLastResults);
+    foreach ($allMaxDateRowPk as $pk) {
+        array_push($allLastResults, getValueById($pk['pk_res']));
     }
+
+    $temperature = 0;
+    $humidity = 0;
+    $count = 0;
+
+    foreach ($allLastResults as $value) {
+      $temperature += $value['res_temperature'];
+      $humidity += $value['res_humidity'];
+
+      $count++;
+    }
+
+    $temperature /= $count;
+    $humidity /= $count;
+
+    $result = [];
+    $result['res_humidity'] = $humidity;
+    $result['res_temperature'] = $temperature;
  
-    return $allLastResults;
+    return $result;
   }
-
-  // function getResultByPk($pk) {
-  //   try {
-  //     $dbh = conn_db();
-
-  //     $sql = "SELECT *
-  //             FROM tb_results";
-
-  //     $stmt = $dbh->prepare($sql);
-  //     $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-  //     $stmt->execute();
-  //   } catch(PDOException $e) {
-  //     echo $e->getMessage();
-  //     die();
-  //   }
-
-  //   return $stmt->fetchAll();
-  // }
 
   function getMaxDateFromLocation($pk_loc) {
     try {
@@ -469,7 +466,9 @@
                       FROM tb_devices dev
                       INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
                       WHERE loc.pk_loc = :fk
+                      LIMIT 1
                   )
+                  LIMIT 1
               ) AND tb_results.fk_res_dev = (
                   SELECT fk_res_dev
                   FROM tb_results
@@ -478,9 +477,11 @@
                       FROM tb_devices dev
                       INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
                       WHERE loc.pk_loc = :fk
+                      LIMIT 1
                   )
                   LIMIT 1
-              )";
+              )
+              LIMIT 1";
 
       $stmt = $dbh->prepare($sql);
       $stmt->bindParam(':fk', $pk_loc, PDO::PARAM_INT);
