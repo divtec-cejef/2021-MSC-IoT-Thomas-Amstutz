@@ -24,6 +24,9 @@
   function convertEpoch($time) {
     $formatedTime = new DateTime("@$time");
 
+    // Add one hour to correct time timezone problems
+    date_add($formatedTime, date_interval_create_from_date_string('1 hour'));
+
     return $formatedTime->format('Y-m-d H:i:s');
   }
 
