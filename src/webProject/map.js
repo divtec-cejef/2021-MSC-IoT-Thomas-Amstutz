@@ -12,10 +12,6 @@ window.onload = function() {
         };
     }
 
-    let testArea = document.getElementById("test");
-    testArea.onclick = function() {
-        alert("clické");
-    };
 }
 
 function updateRoomName(roomName) {
