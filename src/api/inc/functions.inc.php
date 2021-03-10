@@ -422,12 +422,13 @@
 
   function getAvgValues() {
     $pkList = getAllLocationsId();
-
+    
     $allMaxDateRowPk = [];
- 
+    
     foreach ($pkList as $pk) {
       $allMaxDateRowPk = array_merge($allMaxDateRowPk, getMaxDateFromLocation($pk['pk_loc']));
     }
+    // return "ici le soucis";
  
     $allLastResults = [];
     
@@ -450,9 +451,10 @@
     $humidity /= $count;
 
     $result = [];
-    $result['res_humidity'] = $humidity;
-    $result['res_temperature'] = $temperature;
- 
+    $result['res_humidity'] = round($humidity, 2);
+    $result['res_temperature'] = round($temperature, 2);
+    $result['count'] = $count;
+
     return $result;
   }
 
