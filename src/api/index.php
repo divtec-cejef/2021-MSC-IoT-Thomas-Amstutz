@@ -56,7 +56,7 @@ route('get', $sub_dir . '/locations/([0-9]+)/values', function ($matches, $rxd) 
     exit();
 });
 
-route('get', $sub_dir . '/locations/([A-Z-0-9]+)/values', function ($matches, $rxd) {
+route('get', $sub_dir . '/locations/([A-Z-a-z-0-9]+)/values', function ($matches, $rxd) {
     $loc_name = $matches[1][0];
     $data = getLocationByName($loc_name);
     
