@@ -77,9 +77,9 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
 
     $headers = apache_request_headers();
 
-    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key'])) {
+    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key']) && canAdd($headers['X-Api-Key'])) {
         $deviceID = checkDevice($postData['device']);
-        $data = addValue((float)$postData['humidity'], (float)$postData['temperature'], convertEpoch($postData['date']), $postData['seqNumber'], $deviceID);
+        $data = addValue((float)$postData['humidity'], (float)$postData['temperature'], convertEpoch($postData['date'], true), $postData['seqNumber'], $deviceID);
         
         if (empty($data)) {
             http_response_code(400);
@@ -129,7 +129,7 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
     
     $headers = apache_request_headers();
 
-    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key'])) {
+    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key']) && canAdd($headers['X-Api-Key'])) {
         $locationID = checkLocation($postData['location']);
         $data = addSensor($postData['device'], $locationID);
         
@@ -152,11 +152,9 @@ route('post', $sub_dir . '/sensors', function ($matches, $rxd) {
 });
 
 // If the URL isn't correct
-$data = [];
 $data = [
     "error"     => "Unknown route"
 ];
 
 http_response_code(400);
-
 echo json_encode($data, JSON_FORCE_OBJECT);
