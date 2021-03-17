@@ -1,3 +1,16 @@
 [
-    "220e0466-cbaa-4e63-93c7-b78eab67a116"
+    {
+        "key": "220e0466-cbaa-4e63-93c7-b78eab67a116",
+        "can_read": true,
+        "can_add": true,
+        "can_update": true,
+        "can_delete": true
+    },
+    {
+        "key": "test",
+        "can_read": true,
+        "can_add": true,
+        "can_update": true,
+        "can_delete": true
+    }
 ]
