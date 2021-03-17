@@ -1,3 +1,5 @@
+const api_endpoint = "https://amsttho.divtec.me/iot";
+
 function fillTable(table) {
     if (table) {
         let out = "<tr> <th>Humidité</th> <th>Température</th> <th>Date</th> <th>Device</th> <th>Salle</th></tr>";
@@ -25,7 +27,7 @@ function getMeasures() {
             fillTable(content);
         }
     };
-    httpGetAll.open("GET", "https://amsttho.divtec.me/iot/api/values", true);
+    httpGetAll.open("GET", api_endpoint + "/api/values", true);
     httpGetAll.send();
 }
 
@@ -37,7 +39,7 @@ function getLatestTemp() {
             document.getElementById("latestTemp").innerHTML = content['res_temperature'] + "°C, " + content['res_humidity'] + "%";
         }
     };
-    httpGetLast.open("GET", "https://amsttho.divtec.me/iot/api/values/average", true);
+    httpGetLast.open("GET", api_endpoint + "/api/values/average", true);
     httpGetLast.send();
 }
 
