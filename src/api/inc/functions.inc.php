@@ -18,6 +18,20 @@
   }
 
   /**
+   * Check if a key can add other keys
+   * @param $key Key to check
+   * @return true if the key can add other keys
+   */
+  function isMasterKey($key) {
+    $file = file_get_contents(API_KEYS);
+    $json = json_decode($file, true);
+    foreach ($json as $item) {
+      if ($item["key"] == $key)
+        return $item['is_master'];
+    }
+  }
+
+  /**
    * Check if a key can read a value
    * @param $key Key to check
    * @return true if the key can read
@@ -71,6 +85,23 @@
       if ($item["key"] == $key)
         return $item['can_update'];
     }
+  }
+
+  /**
+   * @return all the api keys
+   */
+  function getAllKeys() {
+    $file = file_get_contents(API_KEYS);
+    return $file;
+  }
+
+  function addKey($key, $masterKey) {
+    $file = file_get_contents(API_KEYS);
+    $json = json_decode($file, true);
+    array_push($json, $key);
+    $newJson = json_encode($json, JSON_PRETTY_PRINT);
+    file_put_contents(API_KEYS, $newJson);
+    return $newJson;
   }
 
 
