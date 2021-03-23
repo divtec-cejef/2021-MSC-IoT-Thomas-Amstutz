@@ -21,9 +21,9 @@ function updateRoomName(roomName) {
 }
 
 function getValuesByRoom(roomName) {
-    let urlRequest = "https://amsttho.divtec.me/iot/api/locations/" + roomName + "/values";
+    let urlRequest = api_endpoint + "/api/locations/" + roomName + "/values";
     if (roomName === "")
-        urlRequest = "https://amsttho.divtec.me/iot/api/values";
+        urlRequest = api_endpoint + "/api/values";
     
     let httpGetValues = new XMLHttpRequest();
     httpGetValues.onreadystatechange = function() {
