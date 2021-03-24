@@ -23,12 +23,28 @@ route('get', $sub_dir . '/keys', function ($matches, $rxd) {
         }
     } else {
         $data = [
-            "error" => "Invalid key"
+            "error" => "Invalid master key"
         ];
         
         http_response_code(400);
     }
     echo $data;
+    exit();
+});
+
+route('get', $sub_dir . '/keys/verify/([A-Z-a-z-0-9]+)', function ($matches, $rxd) {
+    $keyToCheck = $matches[1][0];
+    $headers = apache_request_headers();
+    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key']) && isMasterKey($headers['X-Api-Key'])) {
+        $data = isValidKey($keyToCheck);
+    } else {
+        $data = [
+            "error" => "Invalid master key"
+        ];
+        
+        http_response_code(400);
+    }
+    var_dump($data);
     exit();
 });
 
@@ -39,22 +55,31 @@ route('post', $sub_dir . '/keys', function ($matches, $rxd) {
     $headers = apache_request_headers();
 
     if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key']) && isMasterKey($headers['X-Api-Key'])) {
-        $newKey = array(
-            "key"=> $postData['key'],
-            "is_master"=> false,
-            "can_read"=> $postData['can_read'],
-            "can_add"=> $postData['can_add'],
-            "can_update"=> $postData['can_update'],
-            "can_delete"=> $postData['can_delete'],
-        );
-        $data = addKey($newKey, $headers['X-Api-Key']);
-        
-        if (empty($data)) {
-            http_response_code(400);
-            $data = "{}";
+        if (!isValidKey($postData['key'])) {
+            $newKey = array(
+                "key"=> $postData['key'],
+                "is_master"=> false,
+                "can_read"=> $postData['can_read'],
+                "can_add"=> $postData['can_add'],
+                "can_update"=> $postData['can_update'],
+                "can_delete"=> $postData['can_delete'],
+            );
+            $data = addKey($newKey, $headers['X-Api-Key']);
+            
+            if (empty($data)) {
+                http_response_code(400);
+                $data = "{}";
+            } else {
+                http_response_code(201);
+            }
         } else {
-            http_response_code(201);
+            $data = [
+                "error" => "This key already exists"
+            ];
+            
+            http_response_code(400);
         }
+        
     } else {
         $data = [
             "error" => "Invalid key"
