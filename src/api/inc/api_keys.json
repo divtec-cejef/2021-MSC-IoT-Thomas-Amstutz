@@ -1,13 +1,15 @@
 [
     {
         "key": "220e0466-cbaa-4e63-93c7-b78eab67a116",
-        "can_read": true,
-        "can_add": true,
-        "can_update": true,
-        "can_delete": true
+        "is_master": true,
+        "can_read": false,
+        "can_add": false,
+        "can_update": false,
+        "can_delete": false
     },
     {
-        "key": "test",
+        "key": "d885e328-446c-4dab-adfb-caff8f36a4c3",
+        "is_master": false,
         "can_read": true,
         "can_add": true,
         "can_update": true,
