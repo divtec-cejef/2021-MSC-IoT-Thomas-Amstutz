@@ -5,20 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atelier IoT - Capteurs</title>
 
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+
     <link rel="stylesheet" href="style.css">
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
     <script src="main.js" defer></script>
     <script src="map.js" defer></script>
+    <script src="popup.js" defer></script>
 </head>
 <body>
     <header class="header-outer">
         <div class="header-inner responsive-wrapper">
             <nav class="header-navigation">
-                <a href="#">Home</a>
-                <a href="/keygen/">Clés d'API</a>
+                <a id="popup" href="javascript:void(0);"><span class="iconify" data-icon="mdi:cog"></span></a>
+                <a href=".">Home</a>
+                <a href="./keygen/">Clés d'API</a>
             </nav>
             <p id="latestTemp"></p>
         </div>
     </header>
+
+    <div id="modalBox" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <label for="api">Votre clé d'API</label>
+          <input type="text" name="apikey" id="api">
+
+          <div class="hidden infobox" id="modalInfos"></div>
+          <button id="saveApi">Enregistrer</button>
+        </div>
+    </div>
 
     <div class="floorplan" style="margin: 0; padding: 0;">
         <img src="img/floorplan.png" alt="Plan des salles" usemap="#plan">

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>API Key Generator</title>
+
+	<script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="../style.css">
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+	<script type="text/javascript" src="script.js" defer></script>
+	<script src="../popup.js" defer></script>
+</head>
+<body>
+	<header class="header-outer">
+        <div class="header-inner responsive-wrapper">
+            <nav class="header-navigation">
+				<a id="popup" href="javascript:void(0);"><span class="iconify" data-icon="mdi:cog"></span></a>
+                <a href="../">Home</a>
+                <a href=".">Clés d'API</a>
+            </nav>
+            <p id="latestTemp"></p>
+        </div>
+    </header>
+
+	<div id="modalBox" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <label for="api">Votre clé d'API</label>
+          <input type="text" name="apikey" id="api">
+          <button id="saveApi">Enregistrer</button>
+        </div>
+    </div>
+
+	<section class="parent">
+		<div class="wrapper">
+			<button onclick="copy()"><span class="iconify" data-icon="fa-regular:copy"></span></button>
+			<input class="form-control" id="apikey" type="text" value="" readonly placeholder="Appuyer sur le bouton pour créer une clé..."/>
+			<button class="form-control" id="keygen">Générer une clé d'API</button>
+
+			<div class="boxes">
+				<fieldset>
+					<legend>Fonctionnalités de la clé</legend>
+					<input type="checkbox" name="get" id="check_get">
+					<label for="check_get">Voir les valeurs</label>
+
+					<input type="checkbox" name="add" id="check_add">
+					<label for="check_add">Ajouter des valeurs</label>
+
+					<input type="checkbox" name="upd" id="check_upd">
+					<label for="check_upd">Modifier des valeurs</label>
+					
+					<input type="checkbox" name="del" id="check_del">
+					<label for="check_del">Supprimer des valeurs</label>
+				</fieldset>
+				<br>
+				<div class="infobox hidden" id="errors">OK</div>
+				<button id="addKey">Ajouter la clé</button>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

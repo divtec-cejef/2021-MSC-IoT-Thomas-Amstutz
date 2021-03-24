@@ -8,6 +8,15 @@
     --link-color: var(--text-color);
     --link-hover-color: rgb(180, 180, 180);
 
+    --form-border: #ddd;
+    --form-color: #fff;
+	--form-shadow: rgba(0, 0, 0, .07);
+
+	--font-size: 1.2em;
+    --error: rgb(129, 29, 29);
+	--error-dark: rgb(94, 21, 21);
+	--info: rgb(66, 129, 29);
+	--info-dark: rgb(66, 94, 29);
 
     --header-bg: var(--accent-color);
     --header-outer-height: 110px;
@@ -109,6 +118,13 @@ header p {
 	left: 0;
 }
 
+nav .iconify {
+    padding: 0;
+    margin: 0;
+    font-size: 1.5em;
+    text-align: center;
+}
+
 .main-content {
     background-color: var(--accent-color);
 
@@ -188,4 +204,111 @@ body .main-content tr:first-child:hover {
     margin: 0;
     margin-top: 80px;
     padding: 0;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    text-align: left;
+    background-color: var(--accent-color);
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%; /* Could be more or less, depending on screen size */
+    border-radius: 12px;
+    display: block;
+}
+
+.modal-content input, .modal-content label {
+    display: block;
+}
+
+.modal-content input {
+    margin: 0 12px 15px;
+    border: 1px solid var(--form-border);
+	box-shadow: 0 1px 2px var(--form-shadow) inset;
+	outline: 0 none;
+	/* margin: 1px; */
+	padding: 3px 5px;
+	border-radius: 3px;
+	font-size: var(--font-size);
+	font-weight: inherit;
+	box-sizing: border-box;
+	font-family: "Open Sans", sans-serif;
+	line-height: 1.4em;
+	width: 400px;
+}
+.modal-content label {
+    margin: 25px 0 0;
+    padding: 10px;
+    font-size: var(--font-size);
+}
+
+.modal-content button {
+    box-shadow: 0 1px 0 var(--shadow-color);
+	vertical-align: top;
+	border-radius: 3px;
+	border-style: solid;
+	border-width: 1px;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: inline-block;
+	font-size: var(--font-size);
+	height: 28px;
+	line-height: 26px;
+	margin: 0;
+    margin-left: 12px;
+	padding: 6px 10px 28px;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.modal-content .infobox {
+    margin: 20px;
+    margin-left: 12px;
+	padding: 12px 28px;
+	border: solid 1px whitesmoke;
+	width: fit-content;
+}
+
+.modal-content .errors {
+    background-color: var(--error);
+	border: solid 1px var(--error-dark);
+}
+
+.modal-content .info {
+	background-color: var(--info);
+	border: solid 1px var(--info-dark);
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hidden {
+	visibility: hidden;
 }
