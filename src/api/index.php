@@ -155,6 +155,21 @@ route('get', $sub_dir . '/locations/([A-Z-a-z-0-9]+)/values', function ($matches
     exit();
 });
 
+route('get', $sub_dir . '/locations/([A-Z-a-z-0-9]+)/values/latest', function ($matches, $rxd) {
+    $loc_name = $matches[1][0];
+    $data = getLocationByName($loc_name, true);
+    
+    if (empty($data)) {
+        http_response_code(404);
+        $data = "{}";
+    } else {
+        http_response_code(200);
+    }
+
+    echo json_encode($data);
+    exit();
+});
+
 route('post', $sub_dir . '/values', function ($matches, $rxd) {
     $json = file_get_contents('php://input');
     $postData = json_decode($json, true);
@@ -179,6 +194,60 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
         http_response_code(400);
     }
     
+    echo json_encode($data);
+    exit();
+});
+
+route('put', $sub_dir . '/values', function ($matches, $rxd) {
+    $json = file_get_contents('php://input');
+    $postData = json_decode($json, true);
+
+    $headers = apache_request_headers();
+
+    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key']) && canUpdate($headers['X-Api-Key'])) {
+        $deviceID = checkDevice($postData['device']);
+        $data = updateValue($postData['id'], (float)$postData['humidity'], (float)$postData['temperature'], convertEpoch($postData['date'], true), $postData['seqNumber'], $deviceID);
+        
+        if (empty($data)) {
+            http_response_code(400);
+            $data = "{}";
+        } else {
+            http_response_code(201);
+        }
+    } else {
+        $data = [
+            "error" => "Invalid key"
+        ];
+        
+        http_response_code(400);
+    }
+    
+    echo json_encode($data);
+    exit();
+});
+
+route('delete', $sub_dir . '/values/([0-9]+)', function ($matches, $rxd) {
+    $id = $matches[1][0];
+
+    $headers = apache_request_headers();
+
+    if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key']) && canDelete($headers['X-Api-Key'])) {
+        $data = delValueById($id);
+        
+        if (empty($data)) {
+            http_response_code(404);
+            $data = "{}";
+        } else {
+            http_response_code(200);
+        }
+    } else {
+        $data = [
+            "error" => "Invalid key"
+        ];
+        
+        http_response_code(400);
+    }
+
     echo json_encode($data);
     exit();
 });

@@ -181,6 +181,64 @@
   }
 
   /**
+   * Update a measerument on the database
+   * @param $id           The received id
+   * @param $humidity     The received humidity
+   * @param $temperature  The received temperature
+   * @param $date         The DateTime of the measurement
+   * @param $seqNumber    The number of this sequence
+   * @param $dev_id       The device who took the measurement
+   * @return the index of the created mesurement
+   */
+  function updateValue($id, $humidity, $temperature, $date, $seqNumber, $dev_id) {
+    try {
+      $dbh = conn_db();
+
+      $sql = "UPDATE tb_results 
+              SET res_humidity = :humidity, res_temperature = :temperature, res_date = :date, res_seq = :seqNumber, fk_res_dev = :device
+              WHERE :id = pk_res;";
+
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+      $stmt->bindParam(':humidity', $humidity);
+      $stmt->bindParam(':temperature', $temperature);
+      $stmt->bindParam(':date', $date);
+      $stmt->bindParam(':seqNumber', $seqNumber, PDO::PARAM_INT);
+      $stmt->bindParam(':device', $dev_id, PDO::PARAM_INT);
+
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
+
+    return $stmt->rowCount();
+  }
+
+  /**
+   * Delete a value from it's id
+   * @param $id The id to delete
+   */
+  function delValueById($id) {
+    try {
+      $dbh = conn_db();
+
+      $sql = "DELETE FROM tb_results 
+              WHERE :id = pk_res;";
+
+      $stmt = $dbh->prepare($sql);
+      $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+      $stmt->execute();
+    } catch(PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
+
+    return $stmt->rowCount();
+  }
+
+  /**
    * Get all the measurement from the database
    * @return an array of measurement
    */
@@ -338,6 +396,10 @@
     return (int)$stmt->fetch()['pk_dev'];
   }
 
+  /**
+   * @param $location the name of the room
+   * @return a location by it's name
+   */
   function getLocationIdFromName($location) {
     try {
       $dbh = conn_db();
@@ -359,16 +421,21 @@
     return (int)$stmt->fetch()['pk_loc'];
   }
 
-  function getValuesByLocation($locationId) {
+  function getValuesByLocation($locationId, $limit = false) {
     try {
       $dbh = conn_db();
 
+      $limitQuery = "";
+
+      if ($limit)
+        $limitQuery = "LIMIT 1";
+      
       $sql = "SELECT res_humidity, res_temperature, res_date, res_seq, dev.dev_id, loc.loc_name
               FROM tb_results res 
               INNER JOIN tb_devices dev ON res.fk_res_dev = dev.pk_dev 
               INNER JOIN tb_locations loc ON dev.fk_dev_loc = loc.pk_loc
               WHERE loc.pk_loc = :id
-              ORDER BY res_date DESC;";
+              ORDER BY res_date DESC $limitQuery;";
 
       $stmt = $dbh->prepare($sql);
       $stmt->bindParam(':id', $locationId, PDO::PARAM_INT);
@@ -383,9 +450,9 @@
     return $stmt->fetchAll();
   }
 
-  function getLocationByName($location) {
+  function getLocationByName($location, $limit = false) {
     $locationId = getLocationIdByName($location);
-    return getValuesByLocation($locationId);
+    return getValuesByLocation($locationId, $limit);
   }
 
 
