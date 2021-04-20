@@ -178,7 +178,7 @@ route('post', $sub_dir . '/values', function ($matches, $rxd) {
 
     if (isset($headers['X-Api-Key']) && isValidKey($headers['X-Api-Key']) && canAdd($headers['X-Api-Key'])) {
         $deviceID = checkDevice($postData['device']);
-        $data = addValue((float)$postData['humidity'], (float)$postData['temperature'], convertEpoch($postData['date'], true), $postData['seqNumber'], $deviceID);
+        $data = addValue((float)$postData['humidity'], (float)$postData['temperature'], convertEpoch($postData['date'], true, 2), $postData['seqNumber'], $deviceID);
         
         if (empty($data)) {
             http_response_code(400);

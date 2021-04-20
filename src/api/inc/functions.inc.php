@@ -104,19 +104,19 @@
     return $newJson;
   }
 
-
-
   /**
    * Convert an epoch time to a DateTime
    * @param $time epoch time to convert
+   * @param $addHour add one or multiple hours to whe final time (default to false)
+   * @param $hoursToAdd number of hours to add (default to 1)
    * @return the converted value
    */
-  function convertEpoch($time, $addHour = false) {
+  function convertEpoch($time, $addHour = false, $hoursToAdd = 1) {
     $formatedTime = new DateTime("@$time");
 
     // Add one hour to correct time timezone problems
     if ($addHour)
-      date_add($formatedTime, date_interval_create_from_date_string('1 hour'));
+      date_add($formatedTime, date_interval_create_from_date_string("$hoursToAdd hour"));
 
     return $formatedTime->format('Y-m-d H:i:s');
   }
